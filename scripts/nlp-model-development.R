@@ -78,5 +78,33 @@ history <- model %>%
 
 ## CHECK TEST SET ACCURACY HERE
 
+test_text <- as.character(testing(partitions)$text_clean)
+
+
+test_labels <- testing(partitions) %>% pull(bclass) %>% as.numeric() - 1
+
+test_text_vectorized <- preprocess_layer(test_text)
+test_text_vectorized <- array(test_text, dim = c(length(test_text), 1))
+
+predictions <- model %>% predict(test_text_vectorized)
+predicted_labels <- ifelse(predictions >0.5, 1, 0)
+confusion_matrix <- table(Predicted = predicted_labels, Actual = test_labels)
+confusion_matrix
+
+accuracy <- sum(predicted_labels == test_labels) / length(test_labels)
+precision <- sum(predicted_labels == 1 & test_labels == 1) / sum(predicted_labels == 1)
+recall <- sum(predicted_labels == 1 & test_labels == 1) / sum(test_labels == 1)
+f1_score <- 2 * (precision * recall) / (precision + recall)
+
+precision
+recall
+f1_score
+accuracy
+
+#Accuracy is 0.7991
+#Recall is .836
+#Precision is 0.801
+#f1_score is 0.8185
+
 # save the entire model as a SavedModel
 save_model_tf(model, "results/example-model")
