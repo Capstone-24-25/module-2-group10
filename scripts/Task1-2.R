@@ -9,11 +9,6 @@ source('scripts/preprocessing.R')
 
 load('data/claims-clean-example.RData')
 
-url <- 'https://raw.githubusercontent.com/pstat197/pstat197a/main/materials/activities/data/'
-
-# load a few functions for the activity
-source(paste(url, 'projection-functions.R', sep = ''))
-
 
 set.seed(102722)
 
@@ -44,9 +39,6 @@ proj_out$n_pc
 train <- train_labels %>%
   transmute(bclass = factor(bclass)) %>%
   bind_cols(train_dtm_projected)
-
-#this has an error
-#fit <- glm(bclass~.,data=train, family='binomial')
 
 
 x_train <- train %>% select(-bclass) %>% as.matrix()
@@ -99,6 +91,7 @@ pred_df %>% panel(truth = bclass,
                   estimate = bclass.pred, 
                   pred, 
                   event_level = 'second')
+
 
 #Including headers
 #sensitivity binary         0.813
