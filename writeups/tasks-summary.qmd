@@ -1,25 +1,33 @@
 ---
 title: "Summary of exploratory tasks"
-author: 'YOUR NAMES HERE'
+author: ''
 date: today
 ---
 
-### HTML scraping
+## HTML Scraping
 
-Does including header content improve predictions? Answer the question and provide quantitative evidence supporting your answer.
+| Including headers
+
+        | Not including headers    |
+|--------------------------|--------------------------|
+| sensitivity binary 0.813 | sensitivity binary 0.842 |
+| specificity binary 0.769 | specificity binary 0.769 |
+| accuracy binary 0.793    | accuracy binary 0.797    |
+| roc_auc binary 0.876     | roc_auc binary 0.857     |
+
+Above are the results for some key metrics between the two models. We can clearly see that in terms of accuracy, the models do not differ nearly at all. There is a .004 difference in accuracy which works out to about .4%, a miniscule amount. Thus, we can say that including the headers does not necessarily increase the binary class predictions for the principal component logistic regression.
 
 ### Bigrams
 
-Do bigrams capture additional information relevant to the classification of interest? Answer the question, **briefly** describe what analysis you conducted to arrive at your answer, and provide quantitative evidence supporting your answer.
+|                           |
+|---------------------------|
+| Bigram Accuracy           |
+| sensitivity binary 0.987  |
+| specificity binary 0.0422 |
+| accuracy binary 0.589     |
+| roc_auc binary 0.750      |
 
-### Neural net
+First we redefined the function that was used for the unigrams to work and create bigrams to be used in the model creation. We then split the data set on an 80% training and 20% testing split. Once split, we made sure to follow the same process that was used for the unigrams. This allowed us to compare them properly at the end.
 
-Summarize the neural network model you trained by desribing:
 
--   architecture
-
--   optimization and loss
-
--   training epochs
-
--   predictive accuracy
+Here, we can see that the binary accuracy comes out to 0.589 or 58.9%. This percentage is not great and definitely lower than the \~70% that the unigrams got for their binary accuracy. Bigrams do not capture additional information about the claims status of a page. This could be due to many reasons such as sparsity of bigram features, overfitting, loss of contextual information, and increased model complexity.
