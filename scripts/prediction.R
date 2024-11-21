@@ -7,16 +7,16 @@ source('scripts/preprocessing.R')
 
 #tf_model <- load_model_tf('results/example-model')
 
-training_vocabulary <- readRDS('results/Training-vocabulary.rds')
+training_vocabulary <- readRDS('results/Training-vocabulary.rds') %>% as.vector()
 bin_model <- readRDS('results/binary-class-model.rds')
 bin_proj_out <- readRDS('results/binary-proj-out.rds')
 multi_model <- readRDS('results/multi-class-model.rds')
 multi_proj_out <- readRDS('results/multi-proj-out.rds')
 
 # apply preprocessing pipeline
-#clean_df <- claims_test %>%
-#  parse_data() %>%
-#  select(.id, text_clean)
+clean_df <- claims_test %>%
+  parse_data() %>%
+  select(.id, text_clean)
 
 # grab input
 #x <- clean_df %>%
@@ -52,16 +52,15 @@ processed_data <- processed_data[, colnames(processed_data) %in% training_vocabu
 
 
 missing_terms <- setdiff(training_vocabulary, colnames(processed_data))
-missing_terms
-
 
 
 missing_matrix <- matrix(0, nrow = nrow(processed_data), ncol = length(missing_terms))
 colnames(missing_matrix) <- missing_terms
 
-processed_data <- processed_data[, training_vocabulary, drop = FALSE]
 
 processed_data <- cbind(processed_data, missing_matrix)
+
+processed_data <- processed_data[, training_vocabulary, drop = FALSE]
 
 
 
@@ -82,6 +81,7 @@ pred_classes <- factor(preds > 0.5, labels = class_labels)
 
 
 preds_group10 <- cbind(id, pred_classes)
+
 
 
 
