@@ -10,7 +10,7 @@ library(modelr)
 library(Matrix)
 library(sparsesvd)
 library(glmnet)
-
+library(pROC)
 
 #### Loading Data and applying NLP Function
 
