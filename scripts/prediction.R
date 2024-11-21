@@ -128,5 +128,5 @@ joined_data <- preds_group10 %>%
 
 joined_data
 
-# Save the joined data to a CSV file
-write.csv(joined_data, "predictions.csv", row.names = FALSE)
+# Save the joined data to an RData file
+save(joined_data, file = "preds-group10.RData")
