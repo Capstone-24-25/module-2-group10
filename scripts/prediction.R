@@ -4,7 +4,7 @@
 load('data/claims-test.RData')
 load('data/claims-raw.RData')
 source('scripts/preprocessing.R')
-
+library(glmnet)
 #tf_model <- load_model_tf('results/example-model')
 
 training_vocabulary <- readRDS('results/Training-vocabulary.rds') %>% as.vector()
@@ -85,12 +85,48 @@ preds_group10 <- cbind(id, pred_classes)
 
 
 
-
-#Multi-class
+# Multi-class prediction
 test_dtm_proj <- reproject_fn(.dtm = processed_data, multi_proj_out)
-
 x_test_multi <- as.matrix(test_dtm_proj)
 
+# Get predictions from the model
+# For multi-class classification using glmnet models
+# Assuming `multi_model` is a multnet object
+# Assuming multi_model is your glmnet-based multi-class model
+preds <- predict(multi_model, newx = x_test_multi, type = "response", s = 0.1)  # Adjust s (lambda) if needed
 
-#multi_model
+# Check the structure of the predictions
+str(preds)  # Ensure that it is a matrix of probabilities
 
+# Get the class labels from the raw data (assuming mclass contains the target variable)
+class_labels <- claims_raw %>% pull(mclass) %>% levels()
+
+# If preds is a matrix of probabilities, predict the class by selecting the highest probability for each instance
+pred_class <- apply(preds, 1, function(x) class_labels[which.max(x)])
+
+# Convert the predicted class labels into a factor
+pred_class <- factor(pred_class, levels = class_labels)
+
+# Combine the predictions with the original ids for output
+m_preds_group10 <- cbind(id, pred_class)
+
+
+preds_group10
+
+dim(preds_group10)
+dim(m_preds_group10)
+
+library(dplyr)
+
+# Join preds_group10 and m_preds_group10 by the .id column
+joined_data <- preds_group10 %>%
+  left_join(m_preds_group10, by = ".id") %>%
+  rename(
+    binaryclassprediction = pred_classes,
+    multiclassprediction = pred_class
+  )
+
+joined_data
+
+# Save the joined data to a CSV file
+write.csv(joined_data, "predictions.csv", row.names = FALSE)
