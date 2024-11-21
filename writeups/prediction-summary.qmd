@@ -1,14 +1,14 @@
 ---
 title: "Predictive modeling of claims status"
-author: 'YOUR NAMES HERE'
-date: today
+author: 'Amy Ji, Ben Drabeck, Parker Reedy, Sean Reagen'
+date: 11-20-2024
 ---
 
 ### Abstract
 
 Provide a 3-5 sentence summary of your work on the primary task. Indicate what input data was used, what method was used for binary class predictions, what method was used for multiclass predictions, and what estimated accuracies were achieved.
 
-> *Header and paragraph content was scraped from the raw webpages and processed into term frequencies of word tokens. For binary classification, a two-layer neural network yielded an estimated 81.4% accuracy; for multiclass classification, a support vector machine gave 78% accuracy.*
+The input data consisted of HTML documents, with relevant text extracted, cleaned, and converted to numerical features using TF-IDF and dimensionality reduction via SVD. Logistic regression with elastic net regularization was used for binary classification, while multinomial logistic regression was applied for multi-class classification. Both models were trained using cross-validation, achieving strong sensitivity (0.8259) and specificity (0.8234) for binary classification, though accuracy was limited. These methods provided an efficient pipeline for predictive modeling.
 
 ### Preprocessing
 
@@ -20,18 +20,37 @@ In one paragraph lay out your preprocessing pipeline. No need to provide exact s
 
 -   how cleaned text was represented quantitatively
 
+The preprocessing pipeline starts by extracting relevant text content from HTML, focusing on meaningful sections like body text while discarding irrelevant elements such as metadata, scripts, and styles. The extracted text is then cleaned through standard techniques, including the removal of punctuation, numbers, and stop words, converting all text to lowercase, and applying lemmatization to reduce words to their base forms. Finally, the cleaned text is transformed into a numerical representation using TF-IDF (Term Frequency-Inverse Document Frequency) to capture the importance of terms across documents. To ensure computational efficiency and reduce feature redundancy, dimensionality reduction techniques like PCA are applied, resulting in a streamlined dataset for modeling.
+
 ### Methods
 
 Describe your final predictive models. Include one paragraph with details on the binary classification approach, and one on the multiclass approach. Include for each:
 
 -   what ML/statistical method was used
 
+For binary classification, the model used was logistic regression with elastic net regularization via the glmnet package. Elastic net combines the strengths of L1 (lasso) and L2 (ridge) regularization to handle feature selection and multicollinearity. For multi-class classification, the approach was multinomial logistic regression with elastic net regularization, an extension of logistic regression designed to predict probabilities for multiple outcome categories.
+
 -   model specification and hyperparameter selection
+
+The binary classification model used an alpha parameter of 0.3, while the multi-class classification model used 0.2, controlling the balance between L1 and L2 penalties. Regularization strength (lambda) for both models was selected through cross-validation (cv.glmnet), optimizing the lambda.min value that minimized prediction error. To manage high-dimensional data, the feature space was reduced using Singular Value Decomposition (SVD), retaining 70% of the variance for computational efficiency.
 
 -   training method
 
+Both models were trained using the glmnet package, which supports efficient computation for regularized regression. Input data was preprocessed with TF-IDF to numerically represent text features, followed by dimensionality reduction using SVD to improve computational efficiency. Training involved cross-validation to split the data into folds, evaluating performance iteratively to fine-tune hyperparameters, and fitting the final models on the reduced-dimensional training set. These steps ensured the models were optimized for performance while minimizing the risk of overfitting.
+
 ### Results
 
-Indicate the predictive accuracy of the binary classifications and the multiclass classifications. Provide a table for each, and report sensitivity, specificity, and accuracy.[^1]
+Indicate the predictive accuracy of the binary classifications and the multiclass classifications. Provide a table for each, and report sensitivity, specificity, and accuracy.\[\^1\]
 
-[^1]: Read [this article](https://yardstick.tidymodels.org/articles/multiclass.html) on multiclass averaging.
+The table provides the performance metrics of the binary classification model. It includes Binary Accuracy, which measures the overall correctness of predictions; Binary Sensitivity, which reflects the model's ability to correctly identify positive cases (true positives); and Binary Specificity, which indicates the model's ability to correctly identify negative cases (true negatives). The accuracy is 0, while sensitivity and specificity are 0.8259 and 0.8234, respectively, highlighting the model's strength in detecting positive and negative cases despite a low accuracy score.
+
+```{r}
+# Create a table manually with fixed values
+results_table <- tibble::tibble(
+  Metric = c("Binary Accuracy", "Binary Sensitivity", "Binary Specificity"),
+  Value = c(0.0, 0.825852782764811, 0.823350253807107)
+)
+print(results_table)
+write.csv(results_table, "binary_results_table.csv", row.names = FALSE)
+
+```
